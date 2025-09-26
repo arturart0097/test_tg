@@ -1,7 +1,8 @@
 import type { AppUser, PrismUser } from '../types';
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-import { usePrivy } from '@privy-io/react-auth';
+import { usePrivy, useWallets } from '@privy-io/react-auth';
+import { useEnvironment } from '@/hooks/useEnvironment';
 
 interface UserContextType {
   user: AppUser | null;
@@ -16,6 +17,8 @@ const BACKEND_ENDPOINT = import.meta.env.VITE_BACKEND_ENDPOINT
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user: privyUser, authenticated } = usePrivy();
+  const { wallets } = useWallets();
+  const { isTelegram } = useEnvironment();
   const [prismUser, setPrismUser] = useState<PrismUser | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -26,9 +29,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!response.ok) {
         // Assuming 404 means new user, otherwise throw
         if (response.status === 404) {
-           console.log("User not found in backend, might be a new user.");
-           setPrismUser(null);
-           return;
+          console.log("User not found in backend, might be a new user.");
+          setPrismUser(null);
+          return;
         }
         throw new Error('Failed to fetch user data');
       }
@@ -41,7 +44,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false);
     }
   }, []);
-  
+
   useEffect(() => {
     if (authenticated && privyUser) {
       fetchPrismUser(privyUser.id);
@@ -50,14 +53,24 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false);
     }
   }, [authenticated, privyUser, fetchPrismUser]);
-  
+
+  // Sync walletAddress only in Telegram environment
+  useEffect(() => {
+    if (!isTelegram) return;
+    if (!prismUser) return;
+    const nextWallet = wallets?.[0]?.address || '';
+    if (nextWallet && nextWallet !== prismUser.wallet_signer) {
+      setPrismUser({ ...prismUser, wallet_signer: nextWallet });
+    }
+  }, [isTelegram, wallets, prismUser]);
+
   const updateUserProfile = async (data: Partial<PrismUser>) => {
     if (!prismUser) return;
     console.log("Updating profile with:", data);
     const updatedUser = { ...prismUser, ...data };
     setPrismUser(updatedUser);
   };
-  
+
   const mergedUser = privyUser ? {
     ...privyUser,
     prism: prismUser ? {
@@ -70,7 +83,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       username: `User${privyUser.id.slice(-5)}`,
       bio: '',
       avatar_id: `https://picsum.photos/seed/${privyUser.id}/200`,
-      wallet_signer: '',
+      wallet_signer: isTelegram ? (wallets?.[0]?.address || '') : '',
     }
   } : null;
 

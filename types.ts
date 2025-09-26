@@ -21,7 +21,7 @@ export interface PrismUser {
   username: string;
   bio: string | null;
   avatar_id: string;
-  wallet_signer: string;
+  wallet_signer: string | null;
 }
 
 export type AppUser = PrivyUser & { prism?: PrismUser };
