@@ -2,8 +2,11 @@ import Header from "./Header";
 import { Outlet } from "react-router-dom";
 import React from "react";
 import Footer from "./Footer";
+import { useEnvironment } from "@/hooks/useEnvironment";
 
 const MainLayout: React.FC = () => {
+  const { isTelegram } = useEnvironment();
+
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden ">
       <div className="absolute inset-0 animated-bg" />
@@ -15,7 +18,7 @@ const MainLayout: React.FC = () => {
         <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Outlet />
         </main>
-        <Footer />
+        {isTelegram ? <></> : <Footer />}
       </div>
     </div>
   );

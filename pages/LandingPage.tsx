@@ -2,7 +2,6 @@ import { AnimatePresence, motion } from "framer-motion"
 import {
   ArrowLeft,
   ArrowRight,
-  LucideSettings2,
   Search,
 } from "lucide-react"
 import React, { useMemo, useState } from "react"
@@ -12,7 +11,6 @@ import Button from "@/components/ui/Button"
 import GameCard from "../components/GameCard"
 import YGradientCard from "@/components/YGradientCard"
 import { useGames } from "../contexts/GameContext"
-import { useEnvironment } from "@/hooks/useEnvironment"
 
 const GENRES = [
   "Action",
@@ -29,8 +27,6 @@ const LandingPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [activeGenre, setActiveGenre] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(0)
-  const { variant, isTelegram, isMobile, isDesktop } = useEnvironment();
-
 
   const filteredGames = useMemo(() => {
     return games
@@ -62,8 +58,6 @@ const LandingPage: React.FC = () => {
         <p className="text-lg md:text-xl text-gray-400">
           Discover your next favorite game.
         </p>
-      {isTelegram && <p className="text-lg md:text-xl text-red-400">telegram</p>}
-      {isMobile && <p className="text-lg md:text-xl text-red-400">Mobile</p>}
       </div>
       <div className="flex flex-row gap-4 justify-between items-center">
         <YGradientCard className="relative w-full md:w-auto !rounded-md">

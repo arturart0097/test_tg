@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { Route, Routes } from "react-router-dom"
 
 import EditProfilePage from "./pages/EditProfilePage"
 import GamePage from "./pages/GamePage"
@@ -18,19 +18,52 @@ import { useEnvironment } from "./hooks/useEnvironment"
 
 const privyAppId = "clsp79e8b012fblj9e1qx8t3g"
 
-const App: React.FC = () => {
-  const { variant, isTelegram, isMobile, isDesktop } = useEnvironment();
 
-  console.log(variant, "variant")
-  console.log(isTelegram, "isTelegram")
-  console.log(isMobile, "isMobile")
-  console.log(isDesktop, "isDesktop")
+type AllowedLoginMethod =
+  | "line"
+  | "sms"
+  | "passkey"
+  | "email"
+  | "wallet"
+  | "farcaster"
+  | "telegram"
+  | "google"
+  | "twitter"
+  | "discord"
+  | "apple"
+  | "github"
+  | "linkedin"
+  | "spotify"
+  | "instagram"
+  | "tiktok";
+
+const LOGIN_METHODS_TG: AllowedLoginMethod[] = [
+  "email",
+  "google",
+  "twitter",
+  "discord",
+]
+
+const LOGIN_METHODS_DEFAULT: AllowedLoginMethod[] = [
+  "email",
+  "wallet",
+  "google",
+  "twitter",
+  "discord",
+]
+
+const App: React.FC = () => {
+  const { isTelegram } = useEnvironment();
+
+  const loginMethods = isTelegram
+    ? LOGIN_METHODS_TG
+    : LOGIN_METHODS_DEFAULT;
 
   return (
     <PrivyProvider
       appId={privyAppId}
       config={{
-        loginMethods: ["email", "wallet", "google", "twitter", "discord"],
+        loginMethods,
         appearance: {
           theme: "dark",
           accentColor: "#A855F7",
@@ -44,20 +77,20 @@ const App: React.FC = () => {
       <UserProvider>
         <GameProvider>
           <InventoryProvider>
-              <Routes>
-                <Route element={<MainLayout />}>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/profile/edit" element={<EditProfilePage />} />
-                  <Route
-                    path="/profile/settings"
-                    element={<ProfileSettingsPage />}
-                  />
-                  <Route path="/inventory" element={<InventoryPage />} />
-                  <Route path="/games/:name" element={<GamePage />} />
-                </Route>
-              </Routes>
+            <Routes>
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/profile/edit" element={<EditProfilePage />} />
+                <Route
+                  path="/profile/settings"
+                  element={<ProfileSettingsPage />}
+                />
+                <Route path="/inventory" element={<InventoryPage />} />
+                <Route path="/games/:name" element={<GamePage />} />
+              </Route>
+            </Routes>
             <Toaster />
           </InventoryProvider>
         </GameProvider>
