@@ -1,4 +1,4 @@
-import type { User as PrivyUser } from '@privy-io/react-auth';
+import type { User as PrivyUser } from "@privy-io/react-auth";
 
 export interface Game {
   id: string;
@@ -12,7 +12,7 @@ export interface Game {
   tournament?: {
     start_time: number;
     end_time: number;
-  }
+  };
 }
 
 export interface PrismUser {
@@ -22,6 +22,7 @@ export interface PrismUser {
   bio: string | null;
   avatar_id: string;
   wallet_signer: string | null;
+  walletAddress: string | null;
 }
 
 export type AppUser = PrivyUser & { prism?: PrismUser };
@@ -31,7 +32,7 @@ export interface Quest {
   title: string;
   description: string;
   reward: number;
-  type: 'Free' | 'Wagered';
+  type: "Free" | "Wagered";
   completed: boolean;
 }
 

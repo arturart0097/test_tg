@@ -59,8 +59,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!isTelegram) return;
     if (!prismUser) return;
     const nextWallet = wallets?.[0]?.address || '';
-    if (nextWallet && nextWallet !== prismUser.wallet_signer) {
-      setPrismUser({ ...prismUser, wallet_signer: nextWallet });
+    if (nextWallet && nextWallet !== prismUser.walletAddress) {
+      setPrismUser({ ...prismUser, walletAddress: nextWallet });
     }
   }, [isTelegram, wallets, prismUser]);
 
@@ -83,7 +83,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       username: `User${privyUser.id.slice(-5)}`,
       bio: '',
       avatar_id: `https://picsum.photos/seed/${privyUser.id}/200`,
-      wallet_signer: isTelegram ? (wallets?.[0]?.address || '') : '',
+      wallet_signer: '',
+      walletAddress: isTelegram ? (wallets?.[0]?.address || '') : ''
     }
   } : null;
 
